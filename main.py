@@ -1,33 +1,34 @@
 from extractors.channel_extractor import ChannelExtractor
+from extractors.video_extractor import VideoExtractor
+from extractors.statistics_extractor import StatisticsExtractor
 
 
 def main():
 
-    extractor = ChannelExtractor()
+    # Step 1
+    channel = ChannelExtractor().get_channel_details()
 
-    channel = extractor.get_channel_details()
+    uploads_playlist = channel["contentDetails"]["relatedPlaylists"]["uploads"]
 
-    print("\n✅ Channel Extracted Successfully\n")
-
-    print(
-        f"Channel Name : "
-        f"{channel['snippet']['title']}"
+    # Step 2
+    videos = VideoExtractor().get_all_videos(
+        uploads_playlist
     )
 
-    print(
-        f"Subscribers : "
-        f"{channel['statistics'].get('subscriberCount')}"
+    print(f"\nVideos Extracted : {len(videos)}")
+
+    # Step 3
+    video_ids = [
+        video["contentDetails"]["videoId"]
+        for video in videos
+    ]
+
+    # Step 4
+    stats = StatisticsExtractor().get_video_statistics(
+        video_ids
     )
 
-    print(
-        f"Videos : "
-        f"{channel['statistics'].get('videoCount')}"
-    )
-
-    print(
-        f"Views : "
-        f"{channel['statistics'].get('viewCount')}"
-    )
+    print(f"\nStatistics Extracted : {len(stats)}")
 
 
 if __name__ == "__main__":
