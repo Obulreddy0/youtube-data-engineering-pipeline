@@ -1,8 +1,9 @@
-import json
 import os
 
 from clients.youtube_client import YouTubeClient
 from config.settings import CHANNEL_HANDLE
+from loaders.bronze_loader import BronzeLoader
+from config.constants import BRONZE_DIR, CHANNEL_FILE
 
 
 class ChannelExtractor:
@@ -24,18 +25,10 @@ class ChannelExtractor:
 
         channel = response["items"][0]
 
-        os.makedirs("data/bronze", exist_ok=True)
-
-        with open(
-            "data/bronze/channel.json",
-            "w",
-            encoding="utf-8"
-        ) as f:
-            json.dump(
-                channel,
-                f,
-                indent=4,
-                ensure_ascii=False
-            )
+        BronzeLoader.save_json(
+            channel,
+            BRONZE_DIR,
+            CHANNEL_FILE
+        )
 
         return channel

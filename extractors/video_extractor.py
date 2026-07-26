@@ -1,10 +1,10 @@
-import json
-import os
 import time
 
 from googleapiclient.errors import HttpError
 
 from clients.youtube_client import YouTubeClient
+from loaders.bronze_loader import BronzeLoader
+from config.constants import BRONZE_DIR, VIDEOS_FILE
 
 
 class VideoExtractor:
@@ -36,7 +36,7 @@ class VideoExtractor:
 
                 except (ConnectionResetError, HttpError) as e:
 
-                    print(f"\nRetry {attempt + 1}/{max_retries}")
+                    print(f"Retry {attempt + 1}/{max_retries}")
                     print(e)
 
                     time.sleep(3)
@@ -46,26 +46,17 @@ class VideoExtractor:
 
             videos.extend(response["items"])
 
-            print(f"Downloaded {len(videos)} videos...")
+            print(f"Downloaded {len(videos)} videos")
 
             next_page_token = response.get("nextPageToken")
 
             if not next_page_token:
                 break
 
-        os.makedirs("data/bronze", exist_ok=True)
-
-        with open(
-            "data/bronze/videos.json",
-            "w",
-            encoding="utf-8"
-        ) as file:
-
-            json.dump(
-                videos,
-                file,
-                indent=4,
-                ensure_ascii=False
-            )
+        BronzeLoader.save_json(
+            videos,
+            BRONZE_DIR,
+            VIDEOS_FILE
+        )
 
         return videos

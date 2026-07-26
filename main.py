@@ -1,34 +1,15 @@
-from extractors.channel_extractor import ChannelExtractor
-from extractors.video_extractor import VideoExtractor
-from extractors.statistics_extractor import StatisticsExtractor
+from pipeline.extract_pipeline import ExtractPipeline
+from pipeline.transform_pipeline import TransformPipeline
+from pipeline.load_pipeline import LoadPipeline
 
 
 def main():
 
-    # Step 1
-    channel = ChannelExtractor().get_channel_details()
+    ExtractPipeline().run()
 
-    uploads_playlist = channel["contentDetails"]["relatedPlaylists"]["uploads"]
+    TransformPipeline().run()
 
-    # Step 2
-    videos = VideoExtractor().get_all_videos(
-        uploads_playlist
-    )
-
-    print(f"\nVideos Extracted : {len(videos)}")
-
-    # Step 3
-    video_ids = [
-        video["contentDetails"]["videoId"]
-        for video in videos
-    ]
-
-    # Step 4
-    stats = StatisticsExtractor().get_video_statistics(
-        video_ids
-    )
-
-    print(f"\nStatistics Extracted : {len(stats)}")
+    LoadPipeline().run()
 
 
 if __name__ == "__main__":
