@@ -11,25 +11,33 @@ class ExtractPipeline:
         print("STARTING EXTRACT PIPELINE")
         print("=" * 60)
 
+        # Step 1: Extract channel details
         channel = ChannelExtractor().get_channel_details()
 
         uploads_playlist = (
-            channel["contentDetails"]
-                  ["relatedPlaylists"]
-                  ["uploads"]
+            channel["contentDetails"]["relatedPlaylists"]["uploads"]
         )
 
-        videos = VideoExtractor().get_all_videos(
+        # Step 2: Extract videos
+        video_extractor = VideoExtractor()
+
+        videos = video_extractor.get_all_videos(
             uploads_playlist
         )
 
+        # Step 3: Collect all video IDs
         video_ids = [
             video["contentDetails"]["videoId"]
             for video in videos
         ]
 
-        StatisticsExtractor().get_video_statistics(
+        # Step 4: Extract statistics
+        statistics_extractor = StatisticsExtractor()
+
+        statistics_extractor.get_video_statistics(
             video_ids
         )
 
-        print("\nEXTRACT PIPELINE COMPLETED\n")
+        print("=" * 60)
+        print("EXTRACT PIPELINE COMPLETED")
+        print("=" * 60)

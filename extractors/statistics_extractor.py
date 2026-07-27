@@ -1,9 +1,6 @@
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
-from config.constants import (
-    BRONZE_DIR,
-    VIDEO_STATS_FILE
-)
+from config.paths import BRONZE_VIDEO_STATISTICS_FILE
 
 
 class StatisticsExtractor:
@@ -34,8 +31,9 @@ class StatisticsExtractor:
 
         BronzeLoader.save_json(
             statistics,
-            BRONZE_DIR,
-            VIDEO_STATS_FILE
+            BRONZE_VIDEO_STATISTICS_FILE
         )
+
+        print("✅ Video statistics extracted successfully.")
 
         return statistics

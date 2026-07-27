@@ -11,10 +11,8 @@ class TransformPipeline:
 
         transformer = BronzeToSilverTransformer()
 
-        transformer.transform_channel()
+        transformer.transform()
 
-        transformer.transform_videos()
-
-        transformer.transform_statistics()
-
-        print("\nTRANSFORM PIPELINE COMPLETED\n")
+        print("=" * 60)
+        print("TRANSFORM PIPELINE COMPLETED")
+        print("=" * 60)

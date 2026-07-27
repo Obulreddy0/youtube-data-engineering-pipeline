@@ -1,15 +1,27 @@
-import os
+"""
+Application constants.
+No file paths should be defined here.
+"""
 
-# Base Directories
-BASE_DIR = os.getcwd()
+# ==========================================================
+# YouTube API
+# ==========================================================
 
-DATA_DIR = os.path.join(BASE_DIR, "data")
+YOUTUBE_API_SERVICE = "youtube"
+YOUTUBE_API_VERSION = "v3"
 
-BRONZE_DIR = os.path.join(DATA_DIR, "bronze")
-SILVER_DIR = os.path.join(DATA_DIR, "silver")
-GOLD_DIR = os.path.join(DATA_DIR, "gold")
+# ==========================================================
+# API Configuration
+# ==========================================================
 
-# File Names
-CHANNEL_FILE = "channel.json"
-VIDEOS_FILE = "videos.json"
-VIDEO_STATS_FILE = "video_statistics.json"
+MAX_RESULTS_PER_REQUEST = 50
+MAX_RETRIES = 3
+RETRY_DELAY_SECONDS = 3
+
+# ==========================================================
+# Pipeline
+# ==========================================================
+
+PIPELINE_NAME = "youtube-data-engineering-pipeline"
+SOURCE_SYSTEM = "YouTube Data API v3"
+ENVIRONMENT = "local"

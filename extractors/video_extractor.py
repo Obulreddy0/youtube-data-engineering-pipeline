@@ -4,7 +4,7 @@ from googleapiclient.errors import HttpError
 
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
-from config.constants import BRONZE_DIR, VIDEOS_FILE
+from config.paths import BRONZE_VIDEOS_FILE
 
 
 class VideoExtractor:
@@ -55,8 +55,9 @@ class VideoExtractor:
 
         BronzeLoader.save_json(
             videos,
-            BRONZE_DIR,
-            VIDEOS_FILE
+            BRONZE_VIDEOS_FILE
         )
+
+        print(f"✅ Total Videos Extracted: {len(videos)}")
 
         return videos

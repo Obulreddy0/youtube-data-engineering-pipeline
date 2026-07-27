@@ -1,60 +1,63 @@
 import json
-import os
-
 import pandas as pd
 
-from config.constants import (
-    BRONZE_DIR,
-    SILVER_DIR,
-    CHANNEL_FILE,
-    VIDEOS_FILE,
-    VIDEO_STATS_FILE
+from config.paths import (
+    BRONZE_CHANNEL_FILE,
+    BRONZE_VIDEOS_FILE,
+    BRONZE_VIDEO_STATISTICS_FILE,
+    SILVER_CHANNEL_FILE,
+    SILVER_VIDEOS_FILE,
+    SILVER_VIDEO_STATISTICS_FILE
 )
 
 
 class BronzeToSilverTransformer:
 
-    def __init__(self):
+    def transform(self):
 
-        os.makedirs(SILVER_DIR, exist_ok=True)
+        self._transform_channel()
+        self._transform_videos()
+        self._transform_statistics()
 
-    def transform_channel(self):
+        print("\n✅ Bronze → Silver Transformation Completed Successfully")
 
-        with open(
-            os.path.join(BRONZE_DIR, CHANNEL_FILE),
-            encoding="utf-8"
-        ) as file:
+    # ---------------------------------------------------
+    # Channel
+    # ---------------------------------------------------
 
-            channel = json.load(file)
+    def _transform_channel(self):
 
-        data = {
+        with open(BRONZE_CHANNEL_FILE, "r", encoding="utf-8") as f:
+            channel = json.load(f)
+
+        row = {
             "channel_id": channel["id"],
-            "title": channel["snippet"]["title"],
+            "channel_title": channel["snippet"]["title"],
             "description": channel["snippet"]["description"],
             "country": channel["snippet"].get("country"),
             "published_at": channel["snippet"]["publishedAt"],
             "subscriber_count": int(channel["statistics"]["subscriberCount"]),
+            "view_count": int(channel["statistics"]["viewCount"]),
             "video_count": int(channel["statistics"]["videoCount"]),
-            "view_count": int(channel["statistics"]["viewCount"])
         }
 
-        df = pd.DataFrame([data])
+        df = pd.DataFrame([row])
 
         df.to_parquet(
-            os.path.join(SILVER_DIR, "channel.parquet"),
+            SILVER_CHANNEL_FILE,
             index=False
         )
 
-        print("✅ channel.parquet created")
+        print("✔ Channel transformed")
 
-    def transform_videos(self):
+    # ---------------------------------------------------
+    # Videos
+    # ---------------------------------------------------
 
-        with open(
-            os.path.join(BRONZE_DIR, VIDEOS_FILE),
-            encoding="utf-8"
-        ) as file:
+    def _transform_videos(self):
 
-            videos = json.load(file)
+        with open(BRONZE_VIDEOS_FILE, "r", encoding="utf-8") as f:
+            videos = json.load(f)
 
         rows = []
 
@@ -62,79 +65,61 @@ class BronzeToSilverTransformer:
 
             rows.append({
 
-                "video_id":
-                    video["contentDetails"]["videoId"],
+                "video_id": video["contentDetails"]["videoId"],
 
-                "title":
-                    video["snippet"]["title"],
+                "channel_id": video["snippet"]["channelId"],
 
-                "published_at":
-                    video["snippet"]["publishedAt"],
+                "title": video["snippet"]["title"],
 
-                "playlist_position":
-                    video["snippet"]["position"]
+                "description": video["snippet"]["description"],
+
+                "published_at": video["contentDetails"]["videoPublishedAt"],
+
+                "thumbnail_url": video["snippet"]["thumbnails"]["high"]["url"]
 
             })
 
         df = pd.DataFrame(rows)
 
         df.to_parquet(
-            os.path.join(SILVER_DIR, "videos.parquet"),
+            SILVER_VIDEOS_FILE,
             index=False
         )
 
-        print("✅ videos.parquet created")
+        print("✔ Videos transformed")
 
-    def transform_statistics(self):
+    # ---------------------------------------------------
+    # Statistics
+    # ---------------------------------------------------
 
-        with open(
-            os.path.join(BRONZE_DIR, VIDEO_STATS_FILE),
-            encoding="utf-8"
-        ) as file:
+    def _transform_statistics(self):
 
-            stats = json.load(file)
+        with open(BRONZE_VIDEO_STATISTICS_FILE, "r", encoding="utf-8") as f:
+            statistics = json.load(f)
 
         rows = []
 
-        for video in stats:
-
-            statistics = video.get("statistics", {})
-            snippet = video.get("snippet", {})
-            content = video.get("contentDetails", {})
+        for item in statistics:
 
             rows.append({
 
-                "video_id":
-                    video["id"],
+                "video_id": item["id"],
 
-                "title":
-                    snippet.get("title"),
+                "view_count": int(item["statistics"].get("viewCount", 0)),
 
-                "published_at":
-                    snippet.get("publishedAt"),
+                "like_count": int(item["statistics"].get("likeCount", 0)),
 
-                "view_count":
-                    int(statistics.get("viewCount", 0)),
+                "comment_count": int(item["statistics"].get("commentCount", 0)),
 
-                "like_count":
-                    int(statistics.get("likeCount", 0)),
-
-                "comment_count":
-                    int(statistics.get("commentCount", 0)),
-
-                "duration":
-                    content.get("duration")
+                "duration": item["contentDetails"]["duration"]
 
             })
 
         df = pd.DataFrame(rows)
 
         df.to_parquet(
-            os.path.join(
-                SILVER_DIR,
-                "video_statistics.parquet"
-            ),
+            SILVER_VIDEO_STATISTICS_FILE,
             index=False
         )
 
-        print("✅ video_statistics.parquet created")
+        print("✔ Video statistics transformed")

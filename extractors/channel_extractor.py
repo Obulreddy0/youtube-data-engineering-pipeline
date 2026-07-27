@@ -1,9 +1,7 @@
-import os
-
 from clients.youtube_client import YouTubeClient
-from config.settings import CHANNEL_HANDLE
 from loaders.bronze_loader import BronzeLoader
-from config.constants import BRONZE_DIR, CHANNEL_FILE
+from config.settings import CHANNEL_HANDLE
+from config.paths import BRONZE_CHANNEL_FILE
 
 
 class ChannelExtractor:
@@ -19,16 +17,15 @@ class ChannelExtractor:
         ).execute()
 
         if not response["items"]:
-            raise Exception(
-                f"Channel not found: {CHANNEL_HANDLE}"
-            )
+            raise Exception(f"Channel not found: {CHANNEL_HANDLE}")
 
         channel = response["items"][0]
 
         BronzeLoader.save_json(
             channel,
-            BRONZE_DIR,
-            CHANNEL_FILE
+            BRONZE_CHANNEL_FILE
         )
+
+        print("✅ Channel extracted successfully.")
 
         return channel

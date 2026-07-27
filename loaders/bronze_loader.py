@@ -1,15 +1,15 @@
 import json
-import os
+from pathlib import Path
 
 
 class BronzeLoader:
 
     @staticmethod
-    def save_json(data, directory, filename):
+    def save_json(data, file_path):
 
-        os.makedirs(directory, exist_ok=True)
+        file_path = Path(file_path)
 
-        file_path = os.path.join(directory, filename)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(
@@ -19,4 +19,4 @@ class BronzeLoader:
                 ensure_ascii=False
             )
 
-        print(f"Saved -> {file_path}")
+        print(f"Saved: {file_path}")
