@@ -221,3 +221,24 @@ __marimo__/
 config/.env
 data/raw/
 data/processed/
+
+# ==========================================
+# YouTube Data Engineering Pipeline
+# ==========================================
+
+# Generated pipeline data
+data/
+
+# Logs
+logs/
+*.log
+
+# Temporary scripts
+temporary_checks/
+
+# VS Code
+.vscode/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
