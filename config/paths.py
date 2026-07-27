@@ -18,20 +18,27 @@ SILVER_DIR = DATA_DIR / "silver"
 GOLD_DIR = DATA_DIR / "gold"
 
 # ==========================================================
-# Bronze
+# Partition Directories
 # ==========================================================
 
-BRONZE_CHANNEL_FILE = BRONZE_DIR / "channel.json"
-BRONZE_VIDEOS_FILE = BRONZE_DIR / "videos.json"
-BRONZE_VIDEO_STATISTICS_FILE = BRONZE_DIR / "video_statistics.json"
+BRONZE_PARTITION = get_partition_path(BRONZE_DIR)
+SILVER_PARTITION = get_partition_path(SILVER_DIR)
 
 # ==========================================================
-# Silver
+# Bronze Files
 # ==========================================================
 
-SILVER_CHANNEL_FILE = SILVER_DIR / "channel.parquet"
-SILVER_VIDEOS_FILE = SILVER_DIR / "videos.parquet"
-SILVER_VIDEO_STATISTICS_FILE = SILVER_DIR / "video_statistics.parquet"
+BRONZE_CHANNEL_FILE = BRONZE_PARTITION / "channel.json"
+BRONZE_VIDEOS_FILE = BRONZE_PARTITION / "videos.json"
+BRONZE_VIDEO_STATISTICS_FILE = BRONZE_PARTITION / "video_statistics.json"
+
+# ==========================================================
+# Silver Files
+# ==========================================================
+
+SILVER_CHANNEL_FILE = SILVER_PARTITION / "channel.parquet"
+SILVER_VIDEOS_FILE = SILVER_PARTITION / "videos.parquet"
+SILVER_VIDEO_STATISTICS_FILE = SILVER_PARTITION / "video_statistics.parquet"
 
 # ==========================================================
 # Gold
@@ -47,7 +54,7 @@ GOLD_FACT_DIR = GOLD_DIR / "facts"
 LOG_DIR = PROJECT_ROOT / "logs"
 
 # ==========================================================
-# Create folders automatically
+# Create directories automatically
 # ==========================================================
 
 directories = [
@@ -58,16 +65,9 @@ directories = [
     GOLD_DIMENSION_DIR,
     GOLD_FACT_DIR,
     LOG_DIR,
+    BRONZE_PARTITION,
+    SILVER_PARTITION,
 ]
 
 for directory in directories:
     directory.mkdir(parents=True, exist_ok=True)
-
-def get_bronze_partition():
-
-    return get_partition_path(BRONZE_DIR)
-
-
-def get_silver_partition():
-
-    return get_partition_path(SILVER_DIR)    

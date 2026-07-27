@@ -1,8 +1,8 @@
 import json
 
 from config.paths import (
-    get_bronze_partition,
-    get_silver_partition
+    BRONZE_PARTITION,
+    SILVER_PARTITION
 )
 
 
@@ -11,7 +11,7 @@ class MetadataLoader:
     @staticmethod
     def save_bronze_metadata(metadata: dict):
 
-        destination = get_bronze_partition() / "metadata.json"
+        destination = BRONZE_PARTITION / "metadata.json"
 
         with open(destination, "w", encoding="utf-8") as f:
             json.dump(
@@ -26,7 +26,7 @@ class MetadataLoader:
     @staticmethod
     def save_silver_metadata(metadata: dict):
 
-        destination = get_silver_partition() / "metadata.json"
+        destination = SILVER_PARTITION / "metadata.json"
 
         with open(destination, "w", encoding="utf-8") as f:
             json.dump(

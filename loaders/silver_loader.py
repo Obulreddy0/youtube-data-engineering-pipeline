@@ -1,17 +1,14 @@
-from pathlib import Path
 import pandas as pd
 
-from config.paths import get_silver_partition
+from config.paths import SILVER_PARTITION
 
 
 class SilverLoader:
 
     @staticmethod
-    def save_parquet(df: pd.DataFrame, file_path: Path):
+    def save_parquet(df, file_path):
 
-        partition = get_silver_partition()
-
-        destination = partition / file_path.name
+        destination = SILVER_PARTITION / file_path.name
 
         df.to_parquet(
             destination,
