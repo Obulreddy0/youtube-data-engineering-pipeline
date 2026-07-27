@@ -1,4 +1,5 @@
 from pathlib import Path
+from utils.date_partition import get_partition_path
 
 # ==========================================================
 # Project Root
@@ -61,3 +62,12 @@ directories = [
 
 for directory in directories:
     directory.mkdir(parents=True, exist_ok=True)
+
+def get_bronze_partition():
+
+    return get_partition_path(BRONZE_DIR)
+
+
+def get_silver_partition():
+
+    return get_partition_path(SILVER_DIR)    

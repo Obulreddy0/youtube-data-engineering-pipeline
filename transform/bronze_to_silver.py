@@ -1,10 +1,10 @@
 import json
 import pandas as pd
 
+from loaders.silver_loader import SilverLoader
+
 from config.paths import (
-    BRONZE_CHANNEL_FILE,
-    BRONZE_VIDEOS_FILE,
-    BRONZE_VIDEO_STATISTICS_FILE,
+    get_bronze_partition,
     SILVER_CHANNEL_FILE,
     SILVER_VIDEOS_FILE,
     SILVER_VIDEO_STATISTICS_FILE
@@ -15,48 +15,84 @@ class BronzeToSilverTransformer:
 
     def transform(self):
 
+        print("=" * 60)
+        print("STARTING TRANSFORM PIPELINE")
+        print("=" * 60)
+
         self._transform_channel()
         self._transform_videos()
         self._transform_statistics()
 
         print("\n✅ Bronze → Silver Transformation Completed Successfully")
+        print("=" * 60)
+        print("TRANSFORM PIPELINE COMPLETED")
+        print("=" * 60)
 
-    # ---------------------------------------------------
+    # =====================================================
     # Channel
-    # ---------------------------------------------------
+    # =====================================================
 
     def _transform_channel(self):
 
-        with open(BRONZE_CHANNEL_FILE, "r", encoding="utf-8") as f:
+        bronze_partition = get_bronze_partition()
+
+        with open(
+            bronze_partition / "channel.json",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             channel = json.load(f)
 
         row = {
+
             "channel_id": channel["id"],
+
             "channel_title": channel["snippet"]["title"],
+
             "description": channel["snippet"]["description"],
+
             "country": channel["snippet"].get("country"),
+
             "published_at": channel["snippet"]["publishedAt"],
-            "subscriber_count": int(channel["statistics"]["subscriberCount"]),
-            "view_count": int(channel["statistics"]["viewCount"]),
-            "video_count": int(channel["statistics"]["videoCount"]),
+
+            "subscriber_count": int(
+                channel["statistics"]["subscriberCount"]
+            ),
+
+            "view_count": int(
+                channel["statistics"]["viewCount"]
+            ),
+
+            "video_count": int(
+                channel["statistics"]["videoCount"]
+            )
+
         }
 
         df = pd.DataFrame([row])
 
-        df.to_parquet(
-            SILVER_CHANNEL_FILE,
-            index=False
+        SilverLoader.save_parquet(
+            df,
+            SILVER_CHANNEL_FILE
         )
 
         print("✔ Channel transformed")
 
-    # ---------------------------------------------------
+    # =====================================================
     # Videos
-    # ---------------------------------------------------
+    # =====================================================
 
     def _transform_videos(self):
 
-        with open(BRONZE_VIDEOS_FILE, "r", encoding="utf-8") as f:
+        bronze_partition = get_bronze_partition()
+
+        with open(
+            bronze_partition / "videos.json",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             videos = json.load(f)
 
         rows = []
@@ -65,36 +101,49 @@ class BronzeToSilverTransformer:
 
             rows.append({
 
-                "video_id": video["contentDetails"]["videoId"],
+                "video_id":
+                    video["contentDetails"]["videoId"],
 
-                "channel_id": video["snippet"]["channelId"],
+                "channel_id":
+                    video["snippet"]["channelId"],
 
-                "title": video["snippet"]["title"],
+                "title":
+                    video["snippet"]["title"],
 
-                "description": video["snippet"]["description"],
+                "description":
+                    video["snippet"]["description"],
 
-                "published_at": video["contentDetails"]["videoPublishedAt"],
+                "published_at":
+                    video["contentDetails"]["videoPublishedAt"],
 
-                "thumbnail_url": video["snippet"]["thumbnails"]["high"]["url"]
+                "thumbnail_url":
+                    video["snippet"]["thumbnails"]["high"]["url"]
 
             })
 
         df = pd.DataFrame(rows)
 
-        df.to_parquet(
-            SILVER_VIDEOS_FILE,
-            index=False
+        SilverLoader.save_parquet(
+            df,
+            SILVER_VIDEOS_FILE
         )
 
         print("✔ Videos transformed")
 
-    # ---------------------------------------------------
+    # =====================================================
     # Statistics
-    # ---------------------------------------------------
+    # =====================================================
 
     def _transform_statistics(self):
 
-        with open(BRONZE_VIDEO_STATISTICS_FILE, "r", encoding="utf-8") as f:
+        bronze_partition = get_bronze_partition()
+
+        with open(
+            bronze_partition / "video_statistics.json",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             statistics = json.load(f)
 
         rows = []
@@ -103,23 +152,28 @@ class BronzeToSilverTransformer:
 
             rows.append({
 
-                "video_id": item["id"],
+                "video_id":
+                    item["id"],
 
-                "view_count": int(item["statistics"].get("viewCount", 0)),
+                "view_count":
+                    int(item["statistics"].get("viewCount", 0)),
 
-                "like_count": int(item["statistics"].get("likeCount", 0)),
+                "like_count":
+                    int(item["statistics"].get("likeCount", 0)),
 
-                "comment_count": int(item["statistics"].get("commentCount", 0)),
+                "comment_count":
+                    int(item["statistics"].get("commentCount", 0)),
 
-                "duration": item["contentDetails"]["duration"]
+                "duration":
+                    item["contentDetails"]["duration"]
 
             })
 
         df = pd.DataFrame(rows)
 
-        df.to_parquet(
-            SILVER_VIDEO_STATISTICS_FILE,
-            index=False
+        SilverLoader.save_parquet(
+            df,
+            SILVER_VIDEO_STATISTICS_FILE
         )
 
         print("✔ Video statistics transformed")

@@ -1,5 +1,6 @@
 import json
-from pathlib import Path
+
+from config.paths import get_bronze_partition
 
 
 class BronzeLoader:
@@ -7,16 +8,16 @@ class BronzeLoader:
     @staticmethod
     def save_json(data, file_path):
 
-        file_path = Path(file_path)
+        partition = get_bronze_partition()
 
-        file_path.parent.mkdir(parents=True, exist_ok=True)
+        destination = partition / file_path.name
 
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(destination, "w", encoding="utf-8") as f:
             json.dump(
                 data,
-                file,
+                f,
                 indent=4,
                 ensure_ascii=False
             )
 
-        print(f"Saved: {file_path}")
+        print(f"Saved: {destination}")

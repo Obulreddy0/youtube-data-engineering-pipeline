@@ -1,0 +1,9 @@
+{
+    "pipeline_run_id": "e6d2f5fe-8127-439c-81cb-ca53e7a9d645",
+    "pipeline_name": "youtube-data-engineering-pipeline",
+    "environment": "local",
+    "source_system": "YouTube Data API v3",
+    "execution_timestamp": "2026-07-27T06:15:49.332667+00:00",
+    "execution_date": "2026-07-27",
+    "version": "1.0.0"
+}
