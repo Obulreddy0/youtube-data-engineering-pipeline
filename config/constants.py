@@ -1,6 +1,5 @@
 """
-Application constants.
-No file paths should be defined here.
+Application Constants
 """
 
 # ==========================================================
@@ -19,9 +18,10 @@ MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 3
 
 # ==========================================================
-# Pipeline
+# Pipeline Configuration
 # ==========================================================
 
 PIPELINE_NAME = "youtube-data-engineering-pipeline"
-SOURCE_SYSTEM = "YouTube Data API v3"
+PIPELINE_VERSION = "1.0.0"
 ENVIRONMENT = "local"
+SOURCE_SYSTEM = "YouTube Data API v3"

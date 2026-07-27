@@ -1,12 +1,11 @@
 import logging
-from pathlib import Path
 
 from config.paths import LOG_DIR
 
 LOG_FILE = LOG_DIR / "pipeline.log"
 
 
-def get_logger(name: str):
+def get_logger(name):
 
     logger = logging.getLogger(name)
 
@@ -19,11 +18,9 @@ def get_logger(name: str):
         "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
     )
 
-    # Console handler
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
 
-    # File handler
     file_handler = logging.FileHandler(
         LOG_FILE,
         encoding="utf-8"

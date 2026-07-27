@@ -9,44 +9,84 @@ from config.paths import (
     LOG_DIR
 )
 
+from utils.metadata import PipelineMetadata
+from utils.logger import get_logger
+
 
 def main():
 
-    print('=' * 60)
-    print('YOUTUBE DATA ENGINEERING PIPELINE')
-    print('=' * 60)
+    metadata = PipelineMetadata()
 
-    print(f'Bronze Directory : {BRONZE_DIR}')
-    print(f'Silver Directory : {SILVER_DIR}')
-    print(f'Gold Directory   : {GOLD_DIR}')
-    print(f'Log Directory    : {LOG_DIR}')
-    print('=' * 60)
+    logger = get_logger(__name__)
 
-    # -----------------------------------------------------
-    # Extract Stage
-    # -----------------------------------------------------
-    print('\n[1/3] Starting Extract Pipeline...\n')
+    logger.info("=" * 60)
+    logger.info("YOUTUBE DATA ENGINEERING PIPELINE")
+    logger.info("=" * 60)
+
+    logger.info(f"Pipeline Run ID : {metadata.pipeline_run_id}")
+    logger.info(f"Environment     : {metadata.environment}")
+    logger.info(f"Source System   : {metadata.source_system}")
+    logger.info(f"Execution Time  : {metadata.execution_timestamp}")
+
+    print("=" * 60)
+    print("YOUTUBE DATA ENGINEERING PIPELINE")
+    print("=" * 60)
+
+    print(f"Pipeline Run ID : {metadata.pipeline_run_id}")
+    print(f"Bronze Directory : {BRONZE_DIR}")
+    print(f"Silver Directory : {SILVER_DIR}")
+    print(f"Gold Directory   : {GOLD_DIR}")
+    print(f"Log Directory    : {LOG_DIR}")
+    print("=" * 60)
+
+    # -------------------------------------
+    # Extract Pipeline
+    # -------------------------------------
+
+    logger.info("Starting Extract Pipeline")
+
+    print("\n[1/3] Starting Extract Pipeline...\n")
+
     ExtractPipeline().run()
-    print('\n[1/3] Extract Pipeline Completed\n')
 
-    # -----------------------------------------------------
-    # Transform Stage
-    # -----------------------------------------------------
-    print('\n[2/3] Starting Transform Pipeline...\n')
+    logger.info("Extract Pipeline Completed")
+
+    print("\n[1/3] Extract Pipeline Completed\n")
+
+    # -------------------------------------
+    # Transform Pipeline
+    # -------------------------------------
+
+    logger.info("Starting Transform Pipeline")
+
+    print("\n[2/3] Starting Transform Pipeline...\n")
+
     TransformPipeline().run()
-    print('\n[2/3] Transform Pipeline Completed\n')
 
-    # -----------------------------------------------------
-    # Load Stage
-    # -----------------------------------------------------
-    print('\n[3/3] Starting Load Pipeline...\n')
+    logger.info("Transform Pipeline Completed")
+
+    print("\n[2/3] Transform Pipeline Completed\n")
+
+    # -------------------------------------
+    # Load Pipeline
+    # -------------------------------------
+
+    logger.info("Starting Load Pipeline")
+
+    print("\n[3/3] Starting Load Pipeline...\n")
+
     LoadPipeline().run()
-    print('\n[3/3] Load Pipeline Completed\n')
 
-    print('=' * 60)
-    print('PIPELINE EXECUTION COMPLETED SUCCESSFULLY')
-    print('=' * 60)
+    logger.info("Load Pipeline Completed")
+
+    print("\n[3/3] Load Pipeline Completed\n")
+
+    logger.info("Pipeline Completed Successfully")
+
+    print("=" * 60)
+    print("PIPELINE EXECUTION COMPLETED SUCCESSFULLY")
+    print("=" * 60)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
