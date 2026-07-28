@@ -71,3 +71,17 @@ directories = [
 
 for directory in directories:
     directory.mkdir(parents=True, exist_ok=True)
+
+# ==========================================================
+# Gold Files
+# ==========================================================
+
+DIM_CHANNEL_FILE = GOLD_DIMENSION_DIR / "dim_channel.parquet"
+
+DIM_VIDEO_FILE = GOLD_DIMENSION_DIR / "dim_video.parquet"
+
+DIM_DATE_FILE = GOLD_DIMENSION_DIR / "dim_date.parquet"
+
+FACT_VIDEO_PERFORMANCE_FILE = (
+    GOLD_FACT_DIR / "fact_video_performance.parquet"
+)    

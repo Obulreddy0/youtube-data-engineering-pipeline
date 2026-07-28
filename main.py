@@ -1,5 +1,6 @@
 from pipeline.extract_pipeline import ExtractPipeline
 from pipeline.transform_pipeline import TransformPipeline
+from pipeline.gold_pipeline import GoldPipeline
 from pipeline.load_pipeline import LoadPipeline
 
 from config.paths import (
@@ -17,15 +18,14 @@ from loaders.metadata_loader import MetadataLoader
 
 def main():
 
-    # ---------------------------------------
-    # Create Pipeline Metadata
-    # ---------------------------------------
+    # ==========================================================
+    # Pipeline Metadata
+    # ==========================================================
 
     metadata = PipelineMetadata()
 
     logger = get_logger(__name__)
 
-    # Save metadata for this execution
     MetadataLoader.save_bronze_metadata(
         metadata.to_dict()
     )
@@ -34,9 +34,9 @@ def main():
         metadata.to_dict()
     )
 
-    # ---------------------------------------
-    # Logging
-    # ---------------------------------------
+    # ==========================================================
+    # Logging Header
+    # ==========================================================
 
     logger.info("=" * 60)
     logger.info("YOUTUBE DATA ENGINEERING PIPELINE")
@@ -47,15 +47,20 @@ def main():
     logger.info(f"Source System   : {metadata.source_system}")
     logger.info(f"Execution Time  : {metadata.execution_timestamp}")
 
-    # ---------------------------------------
-    # Console
-    # ---------------------------------------
+    # ==========================================================
+    # Console Header
+    # ==========================================================
 
     print("=" * 60)
     print("YOUTUBE DATA ENGINEERING PIPELINE")
     print("=" * 60)
 
     print(f"Pipeline Run ID : {metadata.pipeline_run_id}")
+    print(f"Environment     : {metadata.environment}")
+    print(f"Source System   : {metadata.source_system}")
+    print(f"Execution Time  : {metadata.execution_timestamp}")
+
+    print()
 
     print(f"Bronze Directory : {BRONZE_DIR}")
     print(f"Silver Directory : {SILVER_DIR}")
@@ -64,53 +69,84 @@ def main():
 
     print("=" * 60)
 
-    # ---------------------------------------
-    # Extract
-    # ---------------------------------------
+    # ==========================================================
+    # Execute Pipeline
+    # ==========================================================
 
-    logger.info("Starting Extract Pipeline")
+    try:
 
-    print("\n[1/3] Starting Extract Pipeline...\n")
+        # ------------------------------------------------------
+        # Extract
+        # ------------------------------------------------------
 
-    ExtractPipeline().run()
+        logger.info("Starting Extract Pipeline")
 
-    logger.info("Extract Pipeline Completed")
+        print("\n[1/4] Starting Extract Pipeline...\n")
 
-    print("\n[1/3] Extract Pipeline Completed\n")
+        ExtractPipeline().run()
 
-    # ---------------------------------------
-    # Transform
-    # ---------------------------------------
+        logger.info("Extract Pipeline Completed")
 
-    logger.info("Starting Transform Pipeline")
+        print("\n[1/4] Extract Pipeline Completed\n")
 
-    print("\n[2/3] Starting Transform Pipeline...\n")
+        # ------------------------------------------------------
+        # Transform
+        # ------------------------------------------------------
 
-    TransformPipeline().run()
+        logger.info("Starting Transform Pipeline")
 
-    logger.info("Transform Pipeline Completed")
+        print("\n[2/4] Starting Transform Pipeline...\n")
 
-    print("\n[2/3] Transform Pipeline Completed\n")
+        TransformPipeline().run()
 
-    # ---------------------------------------
-    # Load
-    # ---------------------------------------
+        logger.info("Transform Pipeline Completed")
 
-    logger.info("Starting Load Pipeline")
+        print("\n[2/4] Transform Pipeline Completed\n")
 
-    print("\n[3/3] Starting Load Pipeline...\n")
+        # ------------------------------------------------------
+        # Gold
+        # ------------------------------------------------------
 
-    LoadPipeline().run()
+        logger.info("Starting Gold Pipeline")
 
-    logger.info("Load Pipeline Completed")
+        print("\n[3/4] Starting Gold Pipeline...\n")
 
-    print("\n[3/3] Load Pipeline Completed\n")
+        GoldPipeline().run()
 
-    logger.info("Pipeline Completed Successfully")
+        logger.info("Gold Pipeline Completed")
 
-    print("=" * 60)
-    print("PIPELINE EXECUTION COMPLETED SUCCESSFULLY")
-    print("=" * 60)
+        print("\n[3/4] Gold Pipeline Completed\n")
+
+        # ------------------------------------------------------
+        # Load
+        # ------------------------------------------------------
+
+        logger.info("Starting Load Pipeline")
+
+        print("\n[4/4] Starting Load Pipeline...\n")
+
+        LoadPipeline().run()
+
+        logger.info("Load Pipeline Completed")
+
+        print("\n[4/4] Load Pipeline Completed\n")
+
+        logger.info("Pipeline Completed Successfully")
+
+        print("=" * 60)
+        print("PIPELINE EXECUTION COMPLETED SUCCESSFULLY")
+        print("=" * 60)
+
+    except Exception as e:
+
+        logger.exception("PIPELINE FAILED")
+
+        print("\n" + "=" * 60)
+        print("PIPELINE EXECUTION FAILED")
+        print("=" * 60)
+        print(e)
+
+        raise
 
 
 if __name__ == "__main__":
