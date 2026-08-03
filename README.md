@@ -1,215 +1,223 @@
-# youtube-data-engineering-pipeline
+# YouTube Data Engineering Pipeline
 
-
-An end-to-end Data Engineering project that extracts data from the YouTube Data API v3, processes it through a Medallion Architecture (Bronze → Silver → Gold), and uploads curated datasets to Amazon S3.
+An end-to-end AWS Data Engineering project that extracts YouTube channel data using the YouTube Data API v3, builds a Medallion Architecture (Bronze, Silver, Gold), stores data in Amazon S3, catalogs datasets using AWS Glue Crawlers, and enables SQL analytics through Amazon Athena.
 
 ---
 
-# Project Architecture
+# Architecture
 
-YouTube Data API
-        │
-        ▼
-Extract Pipeline
-        │
-        ▼
-Bronze Layer (JSON)
-        │
-        ▼
-Transform Pipeline
-        │
-        ▼
-Silver Layer (Parquet)
-        │
-        ▼
-Gold Pipeline
-        │
-        ▼
-Dimension & Fact Tables
-        │
-        ▼
-Amazon S3
+```
+                YouTube Data API
+                        │
+                        ▼
+              Python Extract Pipeline
+                        │
+                        ▼
+               Bronze Layer (JSON)
+          (Partitioned by Year/Month/Day)
+                        │
+                        ▼
+            Silver Layer (Parquet)
+          (Cleaned & Standardized Data)
+                        │
+                        ▼
+              Gold Layer (Star Schema)
+        ┌─────────────────────────────┐
+        │      Dimension Tables       │
+        │      Fact Table             │
+        └─────────────────────────────┘
+                        │
+                        ▼
+                  Amazon S3
+                        │
+                        ▼
+               AWS Glue Crawlers
+                        │
+                        ▼
+             AWS Glue Data Catalog
+                        │
+                        ▼
+                 Amazon Athena
+```
 
 ---
 
 # Tech Stack
 
 - Python
-- YouTube Data API v3
 - Pandas
-- PyArrow
+- YouTube Data API v3
 - Amazon S3
 - AWS Secrets Manager
-- Boto3
-- Logging
-- Git & GitHub
-
-Upcoming
-
-- AWS Managed Apache Airflow (MWAA)
-- AWS Glue Catalog
+- AWS Glue Crawlers
+- AWS Glue Data Catalog
 - Amazon Athena
-- Amazon QuickSight
+- Parquet
+- JSON
+- Git & GitHub
 
 ---
 
 # Project Structure
 
-```text
+```
 youtube-data-engineering-pipeline/
 
-config/
-extractors/
-loaders/
-pipeline/
-transform/
-utils/
-
-data/
-    bronze/
-    silver/
-    gold/
-
-logs/
-
-main.py
-requirements.txt
-README.md
+├── clients/
+├── config/
+├── extractors/
+├── loaders/
+├── pipeline/
+├── transform/
+├── utils/
+├── logs/
+│
+├── data/
+│
+│   ├── bronze/
+│   │   ├── channel/
+│   │   ├── videos/
+│   │   ├── video_statistics/
+│   │   └── metadata/
+│   │
+│   ├── silver/
+│   │   ├── channel/
+│   │   ├── videos/
+│   │   ├── video_statistics/
+│   │   └── metadata/
+│   │
+│   └── gold/
+│       ├── dim_channel/
+│       ├── dim_video/
+│       ├── dim_date/
+│       └── fact_video_performance/
+│
+├── main.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-# Current Pipeline
+# Medallion Architecture
 
-## Extract
+## Bronze Layer
 
-Downloads
+Raw data extracted from YouTube API.
 
-- Channel Information
+Format:
+
+- JSON
+
+Datasets:
+
+- Channel
 - Videos
 - Video Statistics
+- Pipeline Metadata
 
-Stores data as JSON in Bronze Layer.
-
-Example
+Partitioning:
 
 ```
-data/
-└── bronze/
-    └── year=2026/
-        └── month=08/
-            └── day=01/
-                channel.json
-                videos.json
-                video_statistics.json
-                metadata.json
+year=YYYY/month=MM/day=DD
 ```
 
 ---
 
-## Transform
+## Silver Layer
 
-Transforms Bronze JSON into structured Parquet files.
+Cleaned and standardized datasets.
 
-Creates
+Format:
 
-- Channel Dataset
-- Videos Dataset
-- Video Statistics Dataset
+- Parquet
 
-Stored in Silver Layer.
+Datasets:
 
-Example
+- Channel
+- Videos
+- Video Statistics
+- Metadata
 
-```
-data/
-└── silver/
-    └── year=2026/
-        └── month=08/
-            └── day=01/
-                channel.parquet
-                videos.parquet
-                video_statistics.parquet
-                metadata.json
-```
+Transformations:
+
+- Data type conversion
+- Column selection
+- Schema standardization
+- Data cleaning
 
 ---
 
 ## Gold Layer
 
-Creates analytical tables.
+Analytics-ready dimensional model.
 
-Dimensions
+### Dimension Tables
 
 - dim_channel
 - dim_video
 - dim_date
 
-Fact
+### Fact Table
 
 - fact_video_performance
 
-Output
+Metrics:
 
-```
-data/
-└── gold/
-    ├── dimensions/
-    │      dim_channel.parquet
-    │      dim_video.parquet
-    │      dim_date.parquet
-    │
-    └── facts/
-           fact_video_performance.parquet
-```
-
----
-
-## Metadata
-
-Each pipeline execution generates metadata including
-
-- Pipeline Run ID
-- Execution Timestamp
-- Environment
-- Source System
-
----
-
-## Logging
-
-Logs are generated for every execution.
-
-Example
-
-```
-logs/
-
-pipeline.log
-```
-
----
-
-# Amazon S3
-
-The pipeline uploads all datasets to Amazon S3.
-
-```
-s3://youtube-data-engineering-pipeline-644266601735/
-
-bronze/
-silver/
-gold/
-```
+- Views
+- Likes
+- Comments
+- Video Duration
 
 ---
 
 # AWS Services Used
 
-- Amazon S3
-- AWS Secrets Manager
-- IAM
-- Boto3
+## Amazon S3
+
+Acts as the Data Lake storing:
+
+- Bronze
+- Silver
+- Gold
+
+---
+
+## AWS Secrets Manager
+
+Secure storage for:
+
+- YouTube API Key
+
+---
+
+## AWS Glue Crawlers
+
+Automatically discover schemas for:
+
+- Bronze Layer
+- Silver Layer
+- Gold Layer
+
+---
+
+## AWS Glue Data Catalog
+
+Creates metadata tables for Athena queries.
+
+---
+
+## Amazon Athena
+
+Run SQL queries directly on S3 datasets.
+
+Example:
+
+```sql
+SELECT *
+FROM dim_video_parquet
+LIMIT 10;
+```
 
 ---
 
@@ -217,122 +225,127 @@ gold/
 
 ```
 Extract
-   │
-   ▼
+      │
+      ▼
 Bronze (JSON)
-   │
-   ▼
+      │
+      ▼
+Transform
+      │
+      ▼
 Silver (Parquet)
-   │
-   ▼
-Gold (Dimension & Fact)
-   │
-   ▼
-Amazon S3
+      │
+      ▼
+Gold (Star Schema)
+      │
+      ▼
+Upload to Amazon S3
+      │
+      ▼
+Glue Crawlers
+      │
+      ▼
+Glue Catalog
+      │
+      ▼
+Athena Analytics
 ```
 
 ---
 
 # Features
 
-✔ Modular pipeline architecture
-
-✔ Bronze, Silver and Gold layers
-
-✔ Date partitioning
-
-✔ Metadata generation
-
-✔ Logging
-
-✔ Secrets Manager integration
-
-✔ Amazon S3 upload
-
-✔ Dimension & Fact tables
-
-✔ Fully automated pipeline
+- Modular ETL architecture
+- Bronze/Silver/Gold design
+- Incremental date partitioning
+- Metadata generation
+- Structured logging
+- Retry handling for API failures
+- Parquet optimization
+- AWS Secrets Manager integration
+- AWS Glue Crawlers
+- AWS Glue Data Catalog
+- Amazon Athena integration
 
 ---
 
-# Running the Project
-
-Clone repository
-
-```bash
-git clone https://github.com/<your-username>/youtube-data-engineering-pipeline.git
-```
-
-Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-Run pipeline
-
-```bash
-python main.py
-```
-
----
-
-# Sprint Progress
+# Current Status
 
 ## Sprint 1
 
 - Project Setup
-- YouTube API Connection
-- Configuration
+- YouTube API Integration
+
+Completed
+
+---
 
 ## Sprint 2
 
-- Extract Pipeline
 - Bronze Layer
+- JSON Storage
+- Metadata
+- Logging
+
+Completed
+
+---
 
 ## Sprint 3
 
 - Silver Layer
-- Transformations
+- Parquet Conversion
+- Data Cleaning
+
+Completed
+
+---
 
 ## Sprint 4
 
-- Metadata
-- Logging
-- Date Partitioning
+- Gold Layer
+- Star Schema
+- Fact & Dimension Tables
+
+Completed
+
+---
 
 ## Sprint 5
 
-- Gold Layer
-- Dimension Tables
-- Fact Table
-- Amazon S3 Upload
-- AWS Secrets Manager Integration
+- Amazon S3 Integration
+- AWS Glue Crawlers
+- AWS Glue Data Catalog
+- Amazon Athena
+- End-to-End AWS Data Lake
 
-## Sprint 6 (In Progress)
+Completed
 
-- Managed Apache Airflow (MWAA)
-- DAG Orchestration
-- Production Scheduling
+---
+
+## Sprint 6 (Next)
+
+- Amazon MWAA
+- Apache Airflow DAG
+- Workflow Scheduling
+- Pipeline Orchestration
 
 ---
 
 # Future Enhancements
 
-- AWS Managed Apache Airflow
-- AWS Glue Catalog
-- Amazon Athena
-- Amazon QuickSight Dashboard
-- Data Quality Checks
-- CI/CD Pipeline
-- Docker
-- Terraform
+- Amazon MWAA
+- CI/CD using GitHub Actions
+- Docker support
 - Unit Testing
+- Data Quality Validation
+- Monitoring & Alerting
+- Infrastructure as Code (Terraform)
 
 ---
 
 # Author
 
-Badri
+**Obul Reddy**
 
 Data Engineering Portfolio Project
