@@ -4,7 +4,6 @@ from googleapiclient.errors import HttpError
 
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
-from config.paths import BRONZE_VIDEOS_FILE
 
 
 class VideoExtractor:
@@ -53,10 +52,7 @@ class VideoExtractor:
             if not next_page_token:
                 break
 
-        BronzeLoader.save_json(
-            videos,
-            BRONZE_VIDEOS_FILE
-        )
+        BronzeLoader.save_videos(videos)
 
         print(f"✅ Total Videos Extracted: {len(videos)}")
 

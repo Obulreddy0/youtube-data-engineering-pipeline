@@ -1,6 +1,6 @@
 from extractors.channel_extractor import ChannelExtractor
 from extractors.video_extractor import VideoExtractor
-from extractors.statistics_extractor import StatisticsExtractor
+from extractors.statistics_extractor import VideoStatisticsExtractor
 
 
 class ExtractPipeline:
@@ -11,7 +11,7 @@ class ExtractPipeline:
         print("STARTING EXTRACT PIPELINE")
         print("=" * 60)
 
-        # Step 1: Extract channel details
+        # Step 1: Extract channel
         channel = ChannelExtractor().get_channel_details()
 
         uploads_playlist = (
@@ -25,17 +25,11 @@ class ExtractPipeline:
             uploads_playlist
         )
 
-        # Step 3: Collect all video IDs
-        video_ids = [
-            video["contentDetails"]["videoId"]
-            for video in videos
-        ]
-
-        # Step 4: Extract statistics
-        statistics_extractor = StatisticsExtractor()
+        # Step 3: Extract statistics
+        statistics_extractor = VideoStatisticsExtractor()
 
         statistics_extractor.get_video_statistics(
-            video_ids
+            videos
         )
 
         print("=" * 60)

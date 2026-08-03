@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from utils.date_partition import get_partition_path
 
 # ==========================================================
@@ -18,59 +19,67 @@ SILVER_DIR = DATA_DIR / "silver"
 GOLD_DIR = DATA_DIR / "gold"
 
 # ==========================================================
-# Partition Directories
+# Bronze Dataset Directories
 # ==========================================================
 
-BRONZE_PARTITION = get_partition_path(BRONZE_DIR)
-SILVER_PARTITION = get_partition_path(SILVER_DIR)
+BRONZE_CHANNEL_DIR = BRONZE_DIR / "channel"
+BRONZE_VIDEOS_DIR = BRONZE_DIR / "videos"
+BRONZE_VIDEO_STATISTICS_DIR = BRONZE_DIR / "video_statistics"
+BRONZE_METADATA_DIR = BRONZE_DIR / "metadata"
 
 # ==========================================================
-# Bronze Files
+# Silver Dataset Directories
 # ==========================================================
 
-BRONZE_CHANNEL_FILE = BRONZE_PARTITION / "channel.json"
-BRONZE_VIDEOS_FILE = BRONZE_PARTITION / "videos.json"
-BRONZE_VIDEO_STATISTICS_FILE = BRONZE_PARTITION / "video_statistics.json"
+SILVER_CHANNEL_DIR = SILVER_DIR / "channel"
+SILVER_VIDEOS_DIR = SILVER_DIR / "videos"
+SILVER_VIDEO_STATISTICS_DIR = SILVER_DIR / "video_statistics"
+SILVER_METADATA_DIR = SILVER_DIR / "metadata"
 
 # ==========================================================
-# Silver Files
+# Bronze Files (Partitioned)
 # ==========================================================
 
-SILVER_CHANNEL_FILE = SILVER_PARTITION / "channel.parquet"
-SILVER_VIDEOS_FILE = SILVER_PARTITION / "videos.parquet"
-SILVER_VIDEO_STATISTICS_FILE = SILVER_PARTITION / "video_statistics.parquet"
+BRONZE_CHANNEL_FILE = (
+    get_partition_path(BRONZE_CHANNEL_DIR)
+    / "channel.json"
+)
+
+BRONZE_VIDEOS_FILE = (
+    get_partition_path(BRONZE_VIDEOS_DIR)
+    / "videos.json"
+)
+
+BRONZE_VIDEO_STATISTICS_FILE = (
+    get_partition_path(BRONZE_VIDEO_STATISTICS_DIR)
+    / "video_statistics.json"
+)
 
 # ==========================================================
-# Gold
+# Silver Files (Partitioned)
+# ==========================================================
+
+SILVER_CHANNEL_FILE = (
+    get_partition_path(SILVER_CHANNEL_DIR)
+    / "channel.parquet"
+)
+
+SILVER_VIDEOS_FILE = (
+    get_partition_path(SILVER_VIDEOS_DIR)
+    / "videos.parquet"
+)
+
+SILVER_VIDEO_STATISTICS_FILE = (
+    get_partition_path(SILVER_VIDEO_STATISTICS_DIR)
+    / "video_statistics.parquet"
+)
+
+# ==========================================================
+# Gold Directories
 # ==========================================================
 
 GOLD_DIMENSION_DIR = GOLD_DIR / "dimensions"
 GOLD_FACT_DIR = GOLD_DIR / "facts"
-
-# ==========================================================
-# Logs
-# ==========================================================
-
-LOG_DIR = PROJECT_ROOT / "logs"
-
-# ==========================================================
-# Create directories automatically
-# ==========================================================
-
-directories = [
-    DATA_DIR,
-    BRONZE_DIR,
-    SILVER_DIR,
-    GOLD_DIR,
-    GOLD_DIMENSION_DIR,
-    GOLD_FACT_DIR,
-    LOG_DIR,
-    BRONZE_PARTITION,
-    SILVER_PARTITION,
-]
-
-for directory in directories:
-    directory.mkdir(parents=True, exist_ok=True)
 
 # ==========================================================
 # Gold Files
@@ -84,4 +93,39 @@ DIM_DATE_FILE = GOLD_DIMENSION_DIR / "dim_date.parquet"
 
 FACT_VIDEO_PERFORMANCE_FILE = (
     GOLD_FACT_DIR / "fact_video_performance.parquet"
-)    
+)
+
+# ==========================================================
+# Logs
+# ==========================================================
+
+LOG_DIR = PROJECT_ROOT / "logs"
+
+# ==========================================================
+# Create Directories
+# ==========================================================
+
+directories = [
+    DATA_DIR,
+
+    BRONZE_DIR,
+    BRONZE_CHANNEL_DIR,
+    BRONZE_VIDEOS_DIR,
+    BRONZE_VIDEO_STATISTICS_DIR,
+    BRONZE_METADATA_DIR,
+
+    SILVER_DIR,
+    SILVER_CHANNEL_DIR,
+    SILVER_VIDEOS_DIR,
+    SILVER_VIDEO_STATISTICS_DIR,
+    SILVER_METADATA_DIR,
+
+    GOLD_DIR,
+    GOLD_DIMENSION_DIR,
+    GOLD_FACT_DIR,
+
+    LOG_DIR,
+]
+
+for directory in directories:
+    directory.mkdir(parents=True, exist_ok=True)

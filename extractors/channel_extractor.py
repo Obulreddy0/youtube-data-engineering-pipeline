@@ -1,7 +1,6 @@
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
 from config.settings import CHANNEL_HANDLE
-from config.paths import BRONZE_CHANNEL_FILE
 
 
 class ChannelExtractor:
@@ -21,10 +20,7 @@ class ChannelExtractor:
 
         channel = response["items"][0]
 
-        BronzeLoader.save_json(
-            channel,
-            BRONZE_CHANNEL_FILE
-        )
+        BronzeLoader.save_channel(channel)
 
         print("✅ Channel extracted successfully.")
 

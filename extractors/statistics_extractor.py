@@ -1,38 +1,60 @@
+import time
+
+from googleapiclient.errors import HttpError
+
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
-from config.paths import BRONZE_VIDEO_STATISTICS_FILE
 
 
-class StatisticsExtractor:
+class VideoStatisticsExtractor:
 
     def __init__(self):
         self.youtube = YouTubeClient.get_client()
 
-    def get_video_statistics(self, video_ids):
+    def get_video_statistics(self, videos):
 
         statistics = []
 
-        for i in range(0, len(video_ids), 50):
+        video_ids = [
+            video["contentDetails"]["videoId"]
+            for video in videos
+        ]
 
-            batch = video_ids[i:i + 50]
+        batch_size = 50
 
-            request = self.youtube.videos().list(
-                part="snippet,statistics,contentDetails",
-                id=",".join(batch)
-            )
+        for i in range(0, len(video_ids), batch_size):
 
-            response = request.execute()
+            batch = video_ids[i:i + batch_size]
+
+            max_retries = 3
+
+            for attempt in range(max_retries):
+
+                try:
+                    response = self.youtube.videos().list(
+                        part="snippet,contentDetails,statistics",
+                        id=",".join(batch)
+                    ).execute()
+
+                    break
+
+                except (ConnectionResetError, HttpError) as e:
+
+                    print(f"Retry {attempt + 1}/{max_retries}")
+                    print(e)
+
+                    time.sleep(3)
+
+                    if attempt == max_retries - 1:
+                        raise
 
             statistics.extend(response["items"])
 
             print(
-                f"Processed {min(i + 50, len(video_ids))}/{len(video_ids)} videos"
+                f"Processed {min(i + batch_size, len(video_ids))}/{len(video_ids)} videos"
             )
 
-        BronzeLoader.save_json(
-            statistics,
-            BRONZE_VIDEO_STATISTICS_FILE
-        )
+        BronzeLoader.save_video_statistics(statistics)
 
         print("✅ Video statistics extracted successfully.")
 

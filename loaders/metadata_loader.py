@@ -1,8 +1,10 @@
 import json
 
+from utils.date_partition import get_partition_path
+
 from config.paths import (
-    BRONZE_PARTITION,
-    SILVER_PARTITION
+    BRONZE_METADATA_DIR,
+    SILVER_METADATA_DIR
 )
 
 
@@ -11,7 +13,14 @@ class MetadataLoader:
     @staticmethod
     def save_bronze_metadata(metadata: dict):
 
-        destination = BRONZE_PARTITION / "metadata.json"
+        partition = get_partition_path(BRONZE_METADATA_DIR)
+
+        destination = partition / "metadata.json"
+
+        destination.parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
 
         with open(destination, "w", encoding="utf-8") as f:
             json.dump(
@@ -26,7 +35,14 @@ class MetadataLoader:
     @staticmethod
     def save_silver_metadata(metadata: dict):
 
-        destination = SILVER_PARTITION / "metadata.json"
+        partition = get_partition_path(SILVER_METADATA_DIR)
+
+        destination = partition / "metadata.json"
+
+        destination.parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
 
         with open(destination, "w", encoding="utf-8") as f:
             json.dump(

@@ -6,10 +6,7 @@ from loaders.silver_loader import SilverLoader
 from config.paths import (
     BRONZE_CHANNEL_FILE,
     BRONZE_VIDEOS_FILE,
-    BRONZE_VIDEO_STATISTICS_FILE,
-    SILVER_CHANNEL_FILE,
-    SILVER_VIDEOS_FILE,
-    SILVER_VIDEO_STATISTICS_FILE
+    BRONZE_VIDEO_STATISTICS_FILE
 )
 
 
@@ -45,10 +42,7 @@ class BronzeToSilverTransformer:
 
         df = pd.DataFrame([row])
 
-        SilverLoader.save_parquet(
-            df,
-            SILVER_CHANNEL_FILE
-        )
+        SilverLoader.save_channel(df)
 
         print("✔ Channel transformed")
 
@@ -66,27 +60,22 @@ class BronzeToSilverTransformer:
         for video in videos:
 
             rows.append({
-
                 "video_id": video["contentDetails"]["videoId"],
                 "channel_id": video["snippet"]["channelId"],
                 "title": video["snippet"]["title"],
                 "description": video["snippet"]["description"],
                 "published_at": video["contentDetails"]["videoPublishedAt"],
                 "thumbnail_url": video["snippet"]["thumbnails"]["high"]["url"]
-
             })
 
         df = pd.DataFrame(rows)
 
-        SilverLoader.save_parquet(
-            df,
-            SILVER_VIDEOS_FILE
-        )
+        SilverLoader.save_videos(df)
 
         print("✔ Videos transformed")
 
     # ---------------------------------------------------
-    # Statistics
+    # Video Statistics
     # ---------------------------------------------------
 
     def _transform_statistics(self):
@@ -99,20 +88,15 @@ class BronzeToSilverTransformer:
         for item in statistics:
 
             rows.append({
-
                 "video_id": item["id"],
                 "view_count": int(item["statistics"].get("viewCount", 0)),
                 "like_count": int(item["statistics"].get("likeCount", 0)),
                 "comment_count": int(item["statistics"].get("commentCount", 0)),
                 "duration": item["contentDetails"]["duration"]
-
             })
 
         df = pd.DataFrame(rows)
 
-        SilverLoader.save_parquet(
-            df,
-            SILVER_VIDEO_STATISTICS_FILE
-        )
+        SilverLoader.save_video_statistics(df)
 
         print("✔ Video statistics transformed")
