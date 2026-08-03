@@ -78,21 +78,35 @@ SILVER_VIDEO_STATISTICS_FILE = (
 # Gold Directories
 # ==========================================================
 
-GOLD_DIMENSION_DIR = GOLD_DIR / "dimensions"
-GOLD_FACT_DIR = GOLD_DIR / "facts"
+GOLD_DIM_CHANNEL_DIR = GOLD_DIR / "dim_channel"
+
+GOLD_DIM_VIDEO_DIR = GOLD_DIR / "dim_video"
+
+GOLD_DIM_DATE_DIR = GOLD_DIR / "dim_date"
+
+GOLD_FACT_VIDEO_PERFORMANCE_DIR = (
+    GOLD_DIR / "fact_video_performance"
+)
 
 # ==========================================================
 # Gold Files
 # ==========================================================
 
-DIM_CHANNEL_FILE = GOLD_DIMENSION_DIR / "dim_channel.parquet"
+DIM_CHANNEL_FILE = (
+    GOLD_DIM_CHANNEL_DIR / "dim_channel.parquet"
+)
 
-DIM_VIDEO_FILE = GOLD_DIMENSION_DIR / "dim_video.parquet"
+DIM_VIDEO_FILE = (
+    GOLD_DIM_VIDEO_DIR / "dim_video.parquet"
+)
 
-DIM_DATE_FILE = GOLD_DIMENSION_DIR / "dim_date.parquet"
+DIM_DATE_FILE = (
+    GOLD_DIM_DATE_DIR / "dim_date.parquet"
+)
 
 FACT_VIDEO_PERFORMANCE_FILE = (
-    GOLD_FACT_DIR / "fact_video_performance.parquet"
+    GOLD_FACT_VIDEO_PERFORMANCE_DIR
+    / "fact_video_performance.parquet"
 )
 
 # ==========================================================
@@ -121,8 +135,10 @@ directories = [
     SILVER_METADATA_DIR,
 
     GOLD_DIR,
-    GOLD_DIMENSION_DIR,
-    GOLD_FACT_DIR,
+    GOLD_DIM_CHANNEL_DIR,
+    GOLD_DIM_VIDEO_DIR,
+    GOLD_DIM_DATE_DIR,
+    GOLD_FACT_VIDEO_PERFORMANCE_DIR,
 
     LOG_DIR,
 ]
