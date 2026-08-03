@@ -53,7 +53,7 @@ class BronzeToSilverTransformer:
     def _transform_videos(self):
 
         with open(BRONZE_VIDEOS_FILE, "r", encoding="utf-8") as f:
-            videos = json.load(f)
+            videos = [json.loads(line) for line in f if line.strip()]
 
         rows = []
 
@@ -81,7 +81,7 @@ class BronzeToSilverTransformer:
     def _transform_statistics(self):
 
         with open(BRONZE_VIDEO_STATISTICS_FILE, "r", encoding="utf-8") as f:
-            statistics = json.load(f)
+            statistics = [json.loads(line) for line in f if line.strip()]
 
         rows = []
 
