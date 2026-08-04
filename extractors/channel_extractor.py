@@ -1,6 +1,6 @@
 from clients.youtube_client import YouTubeClient
 from loaders.bronze_loader import BronzeLoader
-from config.settings import CHANNEL_HANDLE
+from config.settings import get_channel_handle
 
 
 class ChannelExtractor:
@@ -12,11 +12,11 @@ class ChannelExtractor:
 
         response = self.youtube.channels().list(
             part="snippet,statistics,contentDetails",
-            forHandle=CHANNEL_HANDLE.replace("@", "")
+            forHandle=get_channel_handle().replace("@", "")
         ).execute()
 
         if not response["items"]:
-            raise Exception(f"Channel not found: {CHANNEL_HANDLE}")
+            raise Exception(f"Channel not found: {get_channel_handle()}")
 
         channel = response["items"][0]
 

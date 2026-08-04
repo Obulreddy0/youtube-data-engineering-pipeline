@@ -1,5 +1,5 @@
 from googleapiclient.discovery import build
-from config.settings import YOUTUBE_API_KEY
+from config.settings import get_youtube_api_key
 
 
 class YouTubeClient:
@@ -9,5 +9,5 @@ class YouTubeClient:
         return build(
             serviceName="youtube",
             version="v3",
-            developerKey=YOUTUBE_API_KEY
+            developerKey=get_youtube_api_key()
         )

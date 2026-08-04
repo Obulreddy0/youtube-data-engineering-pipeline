@@ -2,8 +2,8 @@ from pathlib import Path
 import boto3
 
 from config.settings import (
-    AWS_REGION,
-    S3_BUCKET
+    get_s3_bucket,
+    get_aws_region
 )
 
 
@@ -12,7 +12,7 @@ class S3Loader:
     def __init__(self):
         self.s3 = boto3.client(
             "s3",
-            region_name=AWS_REGION
+            region_name=get_aws_region()
         )
 
     def upload_directory(self, local_directory: Path, s3_prefix: str):
@@ -41,7 +41,7 @@ class S3Loader:
 
             self.s3.upload_file(
                 str(file),
-                S3_BUCKET,
+                get_s3_bucket(),
                 s3_key
             )
 
