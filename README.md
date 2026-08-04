@@ -815,3 +815,258 @@ Amazon Athena
 SQL Analytics
 ```
 ---
+## 🚀 Getting Started
+
+Follow these steps to set up and run the project locally.
+
+---
+
+### Prerequisites
+
+Ensure the following tools are installed:
+
+- Python 3.12+
+- Docker Desktop
+- Docker Compose
+- AWS CLI
+- Git
+
+---
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/youtube-data-engineering-pipeline.git
+
+cd youtube-data-engineering-pipeline
+```
+
+---
+
+## Create a Virtual Environment
+
+### Windows
+
+```bash
+python -m venv venv
+
+venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv venv
+
+source venv/bin/activate
+```
+
+---
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Configure AWS CLI
+
+Authenticate with your AWS account:
+
+```bash
+aws configure
+```
+
+Provide:
+
+- AWS Access Key ID
+- AWS Secret Access Key
+- AWS Region
+- Output Format
+
+Verify your configuration:
+
+```bash
+aws sts get-caller-identity
+```
+
+---
+
+## Create AWS Resources
+
+Create the following resources before running the pipeline:
+
+- Amazon S3 Bucket
+- AWS Secrets Manager Secret
+- AWS Glue Crawlers
+- AWS Glue Databases
+
+---
+
+## Configure AWS Secrets Manager
+
+Create a secret (for example, `Youtube-API-KEY`) containing:
+
+```json
+{
+  "youtube_api_key": "YOUR_YOUTUBE_API_KEY",
+  "channel_handle": "@your_channel",
+  "aws_region": "YOUR_AWS_REGION",
+  "s3_bucket": "YOUR_S3_BUCKET_NAME"
+}
+```
+
+The pipeline retrieves these values securely at runtime.
+
+---
+
+## Run the Pipeline Locally
+
+Execute the complete ETL pipeline:
+
+```bash
+python main.py
+```
+
+Pipeline execution order:
+
+```text
+Extract
+    ↓
+Transform
+    ↓
+Gold
+    ↓
+Load
+```
+
+---
+
+## Run with Apache Airflow
+
+Navigate to the Airflow directory:
+
+```bash
+cd airflow
+```
+
+Build the custom Docker image:
+
+```bash
+docker compose build
+```
+
+Start the Airflow environment:
+
+```bash
+docker compose up -d
+```
+
+Open the Airflow UI:
+
+```text
+http://localhost:8080
+```
+
+Default credentials:
+
+```text
+Username: airflow
+
+Password: airflow
+```
+
+Enable the DAG and trigger it manually.
+
+---
+
+## Verify the Results
+
+After the pipeline completes successfully:
+
+- Bronze, Silver, and Gold datasets are uploaded to Amazon S3.
+- AWS Glue Crawlers update the Glue Data Catalog.
+- Tables are available in Amazon Athena for querying.
+
+---
+
+## Example Athena Query
+
+```sql
+SELECT
+    v.title,
+    f.view_count
+FROM fact_video_performance f
+JOIN dim_video v
+ON f.video_key = v.video_key
+ORDER BY f.view_count DESC
+LIMIT 10;
+```
+---
+
+## 🚀 Future Improvements
+
+This project establishes a solid foundation for a modern data engineering pipeline. Potential enhancements include:
+
+### Pipeline Enhancements
+
+- [ ] Incremental data loading to process only newly published videos
+- [ ] Change Data Capture (CDC) for updating existing records
+- [ ] Data quality validation using Great Expectations
+- [ ] Automated unit and integration tests with CI/CD
+- [ ] Email or Slack notifications for pipeline failures
+- [ ] Parameterize the pipeline to support multiple YouTube channels
+- [ ] Add configurable retry policies and alerting in Airflow
+
+---
+
+### Cloud Enhancements
+
+- [ ] Deploy Apache Airflow on AWS MWAA
+- [ ] Use AWS Lambda to trigger Glue Crawlers after uploads
+- [ ] Schedule AWS Glue Jobs for cloud-native transformations
+- [ ] Store Terraform or AWS CloudFormation templates for infrastructure provisioning
+- [ ] Enable S3 lifecycle policies for cost optimization
+
+---
+
+### Analytics Enhancements
+
+- [ ] Build interactive dashboards with Amazon QuickSight or Power BI
+- [ ] Add video engagement metrics (Engagement Rate, Like Ratio, Comment Ratio)
+- [ ] Track subscriber growth over time
+- [ ] Analyze upload frequency and publishing trends
+- [ ] Create top-performing content reports by month and year
+
+---
+
+### Data Engineering Best Practices
+
+- [ ] Add comprehensive logging and monitoring
+- [ ] Implement data versioning
+- [ ] Partition Gold datasets for improved Athena performance
+- [ ] Add schema evolution handling
+- [ ] Integrate with Apache Spark for large-scale data processing
+- [ ] Containerize the ETL application for deployment to Kubernetes or Amazon ECS
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Obul Reddy**
+
+- GitHub: https://github.com/<Obulreddy0>
+
+---
+
+## ⭐ Support
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
